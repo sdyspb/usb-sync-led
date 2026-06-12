@@ -1,7 +1,7 @@
-# usb-sync-led – Visual LED indicator for USB backup on [BananaNAS](https://github.com/sdyspb/BananaNAS) (Armbian + OMV)
+# usb-sync-led – LED indicator for USB Backup on [BananaNAS](https://github.com/sdyspb/BananaNAS) with integrated card reader
 
 **usb-sync-led** adds a physical LED status indicator to the `openmediavault-usbbackup` plugin.  
-Useful for headless [BananaNAS](https://github.com/sdyspb/BananaNAS) setups (BPI‑M7, Sige7) where you want immediate visual confirmation that an automatic USB backup is running.
+Useful for settin up [BananaNAS](https://github.com/sdyspb/BananaNAS), providing immediate visual confirmation that an automatic USB backup is running.
 
 ## Features
 
