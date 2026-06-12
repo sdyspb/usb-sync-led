@@ -90,6 +90,9 @@ All backed‑up files become owned by root:root with restrictive permissions (re
 > To restore normal access 
 Use the openmediavault-resetperms plugin. Do not use raw chown/chmod from the command line – that would break OMV’s permission database.
 
+<img width="527" height="372" alt="image" src="https://github.com/user-attachments/assets/33770bab-e762-4fa2-bcde-9ac764615dd6" />
+
+
 ### Built with & credits
 - Armbian – Debian for ARM
 - OpenMediaVault – NAS web interface
