@@ -3,6 +3,8 @@
 **usb-sync-led** adds a physical LED status indicator to the `openmediavault-usbbackup` plugin.  
 Useful for settin up [BananaNAS](https://github.com/sdyspb/BananaNAS), providing immediate visual confirmation that an automatic USB backup is running.
 
+![BananaNAS-CF/SD](cf.png)
+
 ## Features
 
 - **Red LED** turns on while USB backup is active, turns off after completion.
