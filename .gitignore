@@ -1,0 +1,25 @@
+# Editor backup files
+*~
+*.swp
+*.swo
+*.bak
+
+# OS metadata
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Log files
+*.log
+
+# IDE directories
+.vscode/
+.idea/
+
+# Local systemd service files (prevent accidental commit)
+*.service
+*.service.old
+
+# Temporary / test files
+test_*
+*.tmp
