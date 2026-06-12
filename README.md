@@ -1,7 +1,7 @@
-# usb-sync-led – Visual LED indicator for USB backup on BananaNAS (Armbian + OMV)
+# usb-sync-led – Visual LED indicator for USB backup on [BananaNAS](https://github.com/sdyspb/BananaNAS) (Armbian + OMV)
 
 **usb-sync-led** adds a physical LED status indicator to the `openmediavault-usbbackup` plugin.  
-Useful for headless BananaNAS setups (BPI‑M7, Sige7) where you want immediate visual confirmation that an automatic USB backup is running.
+Useful for headless [BananaNAS](https://github.com/sdyspb/BananaNAS) setups (BPI‑M7, Sige7) where you want immediate visual confirmation that an automatic USB backup is running.
 
 ## Features
 
@@ -13,7 +13,7 @@ Useful for headless BananaNAS setups (BPI‑M7, Sige7) where you want immediate 
 
 ## Hardware requirements
 
-- BananaNAS (BPI‑M7, Sige7) with integrated card reader or any SBC with external USB card reader.
+- [BananaNAS](https://github.com/sdyspb/BananaNAS) with integrated card reader or any SBC with external USB card reader.
 - Built‑in **red** (`GPIO4_C5`) and **green** (`GPIO0_B7`) LEDs – already available on BananaNAS.
 - OMV with **openmediavault-usbbackup** plugin installed.
 
@@ -35,7 +35,7 @@ Via OMV web interface → **System > Plugins**:
 
 Configure your USB backup job as usual.
 
-### 2. Install the LED indicator
+### 2. Install the LED indicator script
 
 SSH into your BananaNAS and run:
 
@@ -44,3 +44,72 @@ git clone https://github.com/YOUR_USERNAME/usb-sync-led.git
 cd usb-sync-led
 sudo chmod +x install.sh
 sudo ./install.sh
+```
+### 3. Manual installation (if you prefer)
+```bash
+sudo cp src/usb_sync_led.sh /usr/local/bin/
+sudo chmod +x /usr/local/bin/usb_sync_led.sh
+
+sudo tee /etc/systemd/system/usb-sync-led.service > /dev/null <<EOF
+[Unit]
+Description=USB Sync LED Indicator for BananaNAS
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/usb_sync_led.sh
+Restart=always
+RestartSec=3
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable usb-sync-led.service
+sudo systemctl start usb-sync-led.service
+```
+
+### Testing
+- Manual LED test:
+
+```bash
+echo 255 | sudo tee /sys/class/leds/red/brightness   # red on
+echo 0   | sudo tee /sys/class/leds/red/brightness   # red off
+```
+- Simulate a backup – plug a USB drive that triggers your usbbackup job.
+The red LED should light up during copying and turn off ~2 seconds after completion. The green LED will be off during that time.
+
+### Example session (backup + permission reset)
+```bash
+# 1. Insert USB drive → automatic backup starts
+#    Red LED turns on, green LED turns off.
+
+# 2. After backup finishes, check file ownership
+ls -la /srv/backup-destination/
+# -rw------- 1 root root 12345 myfile.jpg
+# drwx------ 2 root root  4096 myfolder
+
+# 3. Files are owned by root – safe from accidental deletion.
+#    To restore normal user access, use the resetperms plugin:
+#    OMV web UI → Storage → Shared Folders → select your backup folder → Reset Permissions
+
+# 4. After reset:
+ls -la /srv/backup-destination/
+# -rw-rw-r-- 1 openmediavault openmediavault 12345 myfile.jpg
+```
+
+### Security & permissions note
+The openmediavault-usbbackup plugin runs rsync as root.
+All backed‑up files become owned by root:root with restrictive permissions (read / execute only), that prevents accidental deletion or modification from a regular user.
+
+> To restore normal access 
+Use the openmediavault-resetperms plugin. Do not use raw chown/chmod from the command line – that would break OMV’s permission database.
+
+### Built with & credits
+- Armbian – Debian for ARM
+- OpenMediaVault – NAS web interface
+- openmediavault-usbbackup – automatic USB backup engine
+- openmediavault-resetperms – safe permission restoration
+- Linux LED subsystem – /sys/class/leds/ interface
