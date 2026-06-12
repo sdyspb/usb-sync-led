@@ -81,25 +81,6 @@ echo 0   | sudo tee /sys/class/leds/red/brightness   # red off
 - Simulate a backup – plug a USB drive that triggers your usbbackup job.
 The red LED should light up during copying and turn off ~2 seconds after completion. The green LED will be off during that time.
 
-### Example session (backup + permission reset)
-```bash
-# 1. Insert USB drive → automatic backup starts
-#    Red LED turns on, green LED turns off.
-
-# 2. After backup finishes, check file ownership
-ls -la /srv/backup-destination/
-# -rw------- 1 root root 12345 myfile.jpg
-# drwx------ 2 root root  4096 myfolder
-
-# 3. Files are owned by root – safe from accidental deletion.
-#    To restore normal user access, use the resetperms plugin:
-#    OMV web UI → Storage → Shared Folders → select your backup folder → Reset Permissions
-
-# 4. After reset:
-ls -la /srv/backup-destination/
-# -rw-rw-r-- 1 openmediavault openmediavault 12345 myfile.jpg
-```
-
 ### Security & permissions note
 The openmediavault-usbbackup plugin runs rsync as root.
 All backed‑up files become owned by root:root with restrictive permissions (read / execute only), that prevents accidental deletion or modification from a regular user.
