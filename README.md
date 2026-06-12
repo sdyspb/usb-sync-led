@@ -83,6 +83,12 @@ echo 0   | sudo tee /sys/class/leds/red/brightness   # red off
 - Simulate a backup – plug a USB drive that triggers your usbbackup job.
 The red LED should light up during copying and turn off ~2 seconds after completion. The green LED will be off during that time.
 
+### Hints
+To setup log add this string as extra option in edit task window:
+```text
+--log-file=/var/log/usbbackup_rsync.log
+```
+
 ### Security & permissions note
 The openmediavault-usbbackup plugin runs rsync as root.
 All backed‑up files become owned by root:root with restrictive permissions (read / execute only), that prevents accidental deletion or modification from a regular user.
