@@ -1,12 +1,9 @@
 #!/bin/bash
 
-# === CONFIGURATION ===
 RED_LED="/sys/class/leds/red/brightness"
 GREEN_LED="/sys/class/leds/green"
 GREEN_TRIGGER="$GREEN_LED/trigger"
 GREEN_BRIGHT="$GREEN_LED/brightness"
-DEBOUNCE_SEC=2
-# ====================
 
 save_green_trigger() {
     if [ -f "$GREEN_TRIGGER" ]; then
@@ -32,30 +29,23 @@ red_off() { echo 0   > "$RED_LED"; }
 
 save_green_trigger
 restore_green
+red_off
 
-red_active=0
-debounce_pid=""
+is_backup_active() {
+    pgrep -f "/var/lib/openmediavault/usbbackup.d/systemd-" > /dev/null && return 0
+    pgrep -f "rsync.*--delete.*--log-file" > /dev/null && return 0
+    pgrep -f "rsync.*--delete.*/srv/" > /dev/null && return 0
+    pgrep -f "rsync.*--log-file.*usbbackup" > /dev/null && return 0
+    return 1
+}
 
 while true; do
-    if pgrep -f "/var/lib/openmediavault/usbbackup.d/systemd-" > /dev/null; then
-        if [ $red_active -eq 0 ]; then
-            red_on
-            disable_green
-            red_active=1
-            [ -n "$debounce_pid" ] && kill $debounce_pid 2>/dev/null && debounce_pid=""
-        fi
+    if is_backup_active; then
+        red_on
+        disable_green
     else
-        if [ $red_active -eq 1 ] && [ -z "$debounce_pid" ]; then
-            (
-                sleep $DEBOUNCE_SEC
-                if ! pgrep -f "/var/lib/openmediavault/usbbackup.d/systemd-" > /dev/null; then
-                    red_off
-                    restore_green
-                fi
-            ) &
-            debounce_pid=$!
-            sleep 0.1
-        fi
+        red_off
+        restore_green
     fi
     sleep 0.5
 done
