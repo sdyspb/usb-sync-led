@@ -15,13 +15,13 @@ save_green_trigger() {
     fi
 }
 
-# Disable green LED (take control)
+# Disable green LED
 disable_green() {
     [ -f "$GREEN_TRIGGER" ] && echo none > "$GREEN_TRIGGER" 2>/dev/null
     [ -f "$GREEN_BRIGHT" ] && echo 0 > "$GREEN_BRIGHT" 2>/dev/null
 }
 
-# Restore green LED to original state
+# Restore green LED
 restore_green() {
     [ -f "$GREEN_TRIGGER" ] && echo "$ORIG_TRIGGER" > "$GREEN_TRIGGER" 2>/dev/null
     [ -f "$GREEN_BRIGHT" ] && echo 255 > "$GREEN_BRIGHT" 2>/dev/null
@@ -36,12 +36,11 @@ save_green_trigger
 restore_green
 red_off
 
-# Detect active USB backup
+# Detect active USB backup (3 methods)
 is_backup_active() {
     pgrep -f "/var/lib/openmediavault/usbbackup.d/systemd-" > /dev/null && return 0
     pgrep -f "rsync.*--delete.*--log-file" > /dev/null && return 0
     pgrep -f "rsync.*--delete.*/srv/" > /dev/null && return 0
-    pgrep -f "rsync.*--log-file.*usbbackup" > /dev/null && return 0
     return 1
 }
 
