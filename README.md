@@ -103,5 +103,5 @@ Use the openmediavault-resetperms plugin. Do not use raw chown/chmod from the co
 - Armbian – Debian for ARM
 - OpenMediaVault – NAS web interface
 - openmediavault-usbbackup – automatic USB backup engine
-- openmediavault-resetperms – safe permission restoration
+- [openmediavault-resetperms](https://wiki.omv-extras.org/doku.php?id=omv8:omv8_plugins:resetperms) – safe permission restoration
 - Linux LED subsystem – /sys/class/leds/ interface
